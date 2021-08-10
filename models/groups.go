@@ -21,6 +21,7 @@ func NewGroup(now time.Time, name string, members []*User) *Group {
 	g.AddMembers()
 	g.Created = now
 	g.AddMembers(members...)
+	return g
 }
 
 // SetID sets the ID of the group to a new UUID.
