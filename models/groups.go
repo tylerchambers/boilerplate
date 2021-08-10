@@ -13,6 +13,8 @@ type Group struct {
 	Name    string
 	Members []*User
 	Created time.Time
+	Owner   *User
+	Admins  []*User
 }
 
 func NewGroup(now time.Time, name string, members []*User) *Group {
@@ -77,4 +79,26 @@ func (g *Group) Contains(user *User) bool {
 		}
 	}
 	return false
+}
+
+func (g *Group) SetOwner(user *User) {
+	g.Owner = user
+}
+
+func (g *Group) AddAdmin(user *User) {
+	g.Admins = append(g.Admins, user)
+}
+
+func (g *Group) RemoveAdmin(user *User) error {
+	for i, v := range g.Members {
+		if v.ID == user.ID {
+			g.Admins = append(g.Members[:i], g.Members[i+1:]...)
+			return nil
+		}
+	}
+	return errors.New("member could not be removed because it was not an admin")
+}
+
+func (g *Group) AddAdmins(users ...*User) {
+	g.Admins = append(g.Admins, users...)
 }
