@@ -1,2 +1,2 @@
-# pequeno
-The pequeño logging service.
+# Boilerplate
+Golang webapp boilerplate.
