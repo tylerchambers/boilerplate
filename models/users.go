@@ -12,6 +12,8 @@ import (
 type User struct {
 	ID           uuid.UUID
 	Username     string
+	FirstName    string
+	LastName     string
 	Email        string
 	Password     string
 	PasswordSet  time.Time
@@ -30,6 +32,14 @@ func (u *User) SetID() {
 func (u *User) SetUsername(username string) {
 	// TODO: check if username is already taken, etc.
 	u.Username = username
+}
+
+func (u *User) SetFirstName(first string) {
+	u.FirstName = first
+}
+
+func (u *User) SetLastName(last string) {
+	u.LastName = last
 }
 
 func (u *User) SetEmail(email string) {
