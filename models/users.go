@@ -4,11 +4,13 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // User represents a user of our service.
 type User struct {
+	ID           uuid.UUID
 	Username     string
 	Email        string
 	Password     string
@@ -19,6 +21,10 @@ type User struct {
 	PremiumUntil time.Time
 	Subscribed   bool
 	SubscribedOn time.Time
+}
+
+func (u *User) SetID() {
+	u.ID = uuid.New()
 }
 
 func (u *User) SetUsername(username string) {
@@ -87,6 +93,7 @@ func NewUser(now time.Time, username, email, password string) (*User, error) {
 	u := new(User)
 	u.SetUsername(username)
 	u.SetEmail(email)
+	u.SetID()
 	err := u.SetPassword(now, password)
 	if err != nil {
 		return nil, errors.New("could not register new user")
