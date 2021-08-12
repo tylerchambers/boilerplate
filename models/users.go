@@ -6,10 +6,12 @@ import (
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // User represents a user of our service.
 type User struct {
+	gorm.Model
 	ID           uuid.UUID
 	Username     string
 	FirstName    string
