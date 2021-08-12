@@ -2,8 +2,9 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/tylerchambers/boilerplate/models"
 )
 
 type LoginRequest struct {
@@ -17,6 +18,12 @@ func (s *Server) loginHandler() http.HandlerFunc {
 
 		json.NewDecoder(r.Body).Decode(&req)
 
-		fmt.Fprintf(w, "You tried to login as %s with password %s", req.Email, req.Password)
+		var user models.User
+		s.db.First(&user, "email = ?", req.Email)
+		if user.CheckPassword(req.Password) {
+			w.Write([]byte("login successful!"))
+		} else {
+			w.Write([]byte("login failed"))
+		}
 	}
 }
