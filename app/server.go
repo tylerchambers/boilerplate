@@ -13,16 +13,16 @@ import (
 )
 
 type Server struct {
-	Port   string
-	Router *mux.Router
-	DB     *gorm.DB
-	Email  struct{}
+	port   string
+	router *mux.Router
+	db     *gorm.DB
+	email  struct{}
 }
 
 // initDB initializes the application's database conection.
 func (s *Server) initDB() error {
 	var err error
-	s.DB, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	s.db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 
 	if err != nil {
 		return fmt.Errorf("failed to connect to the database")
@@ -32,10 +32,10 @@ func (s *Server) initDB() error {
 
 // migrateDB performs DB migrations.
 func (s *Server) migrateDB() error {
-	s.DB.AutoMigrate(&models.User{})
+	s.db.AutoMigrate(&models.User{})
 	// TODO: Remove test user creation.
 	testUser, _ := models.NewUser(time.Now(), "test", "test@example.com", "password1")
-	s.DB.Create(testUser)
+	s.db.Create(testUser)
 
 	return nil
 }
@@ -47,7 +47,7 @@ func (s *Server) initMail() error {
 
 // NewServer takes a port and returns an instance of the server.
 func NewServer(port string) (*Server, error) {
-	s := &Server{Port: port}
+	s := &Server{port: port}
 	err := s.initDB()
 	if err != nil {
 		return nil, fmt.Errorf("error opening database connection: %v", err)
@@ -62,7 +62,7 @@ func NewServer(port string) (*Server, error) {
 }
 
 func (s *Server) Run() {
-	addr := fmt.Sprintf(":%s", s.Port)
+	addr := fmt.Sprintf(":%s", s.port)
 	log.Printf("Starting app on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, s.Router))
+	log.Fatal(http.ListenAndServe(addr, s.router))
 }
