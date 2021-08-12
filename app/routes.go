@@ -5,8 +5,10 @@ import "github.com/gorilla/mux"
 func (s *Server) initRoutes() {
 	s.Router = mux.NewRouter()
 
-	apiSubrouter := s.Router.PathPrefix("/api").Subrouter()
-	// TODO: Enable middleware here.
-	// apiSubrouter.Use()
-	apiSubrouter.HandleFunc("/", s.apiRootHandler())
+	// A subrouter to handle API requests.
+	apiSubrouter := s.Router.PathPrefix("/api/v1").Subrouter()
+	apiSubrouter.HandleFunc("/status", s.statusHandler())
+
+	// Authentication related routes.
+	apiSubrouter.HandleFunc("/auth/login", s.loginHandler()).Methods("POST")
 }
