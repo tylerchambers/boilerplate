@@ -42,6 +42,7 @@ func (s *Server) migrateDB() error {
 
 // initMail initializes the application's mail capibilites.
 func (s *Server) initMail() error {
+	s.email = struct{}{}
 	return nil
 }
 
