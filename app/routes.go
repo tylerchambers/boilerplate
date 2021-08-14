@@ -11,4 +11,7 @@ func (s *Server) initRoutes() {
 
 	// Authentication related routes.
 	apiSubrouter.HandleFunc("/auth/login", s.loginHandler()).Methods("POST")
+	apiSubrouter.HandleFunc("/auth/logout", s.logoutHandler()).Methods("GET")
+
+	apiSubrouter.HandleFunc("/usersonly", s.userAuthMiddleware(s.usersOnly()))
 }

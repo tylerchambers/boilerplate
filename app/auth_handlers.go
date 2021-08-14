@@ -18,12 +18,26 @@ func (s *Server) loginHandler() http.HandlerFunc {
 
 		json.NewDecoder(r.Body).Decode(&req)
 
+		session, _ := s.sessionStore.Get(r, "boilerplate_userauth")
+
 		var user models.User
 		s.db.First(&user, "email = ?", req.Email)
 		if user.CheckPassword(req.Password) {
-			w.Write([]byte("login successful!"))
+			session.Values["authenticated"] = true
+			session.Save(r, w)
+			w.Write([]byte("Login successful!"))
 		} else {
-			w.Write([]byte("login failed"))
+			w.Write([]byte("Login failed."))
 		}
+	}
+}
+
+func (s *Server) logoutHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := s.sessionStore.Get(r, "boilerplate_userauth")
+
+		session.Values["authenticated"] = false
+		session.Save(r, w)
+		w.Write([]byte("Logout successful"))
 	}
 }
