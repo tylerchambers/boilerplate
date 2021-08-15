@@ -5,29 +5,30 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/tylerchambers/boilerplate/models"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type Server struct {
-	port         string
 	router       *mux.Router
 	db           *gorm.DB
 	email        struct{}
 	secretKey    []byte
 	sessionStore *sessions.CookieStore
+	env          *Enviornment
 }
 
 // initDB initializes the application's database conection.
 func (s *Server) initDB() error {
 	var err error
-	s.db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
+		s.env.PgHost, s.env.PgUser, s.env.PgPassword, s.env.PgDBName, s.env.PgPort, s.env.PgSSLMode, s.env.PgTZ)
+	s.db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		return fmt.Errorf("failed to connect to the database")
@@ -53,7 +54,7 @@ func (s *Server) initMail() error {
 
 // initSecretKey takes a key from an SECRET_KEY env variable, checks its size, and sets for the server.
 func (s *Server) initSecretKey() error {
-	key := os.Getenv("SECRET_KEY")
+	key := s.env.SecretKey
 	bkey := []byte(key)
 	keySize := len(bkey)
 	if keySize == 32 || keySize == 24 || keySize == 16 {
@@ -69,9 +70,10 @@ func (s *Server) initSessionStore() error {
 	return nil
 }
 
-// NewServer takes a port and returns an instance of the server.
-func NewServer(port string) (*Server, error) {
-	s := &Server{port: port}
+// NewServer returns an instance of the server.
+func NewServer() (*Server, error) {
+	s := &Server{}
+	s.initEnv()
 	err := s.initDB()
 	if err != nil {
 		return nil, fmt.Errorf("error opening database connection: %v", err)
@@ -91,7 +93,7 @@ func NewServer(port string) (*Server, error) {
 }
 
 func (s *Server) Run() {
-	addr := fmt.Sprintf(":%s", s.port)
+	addr := fmt.Sprintf(":%s", s.env.Port)
 	log.Printf("Starting app on %s", addr)
 	log.Fatal(http.ListenAndServe(addr, s.router))
 }
