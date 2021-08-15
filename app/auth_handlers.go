@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/tylerchambers/boilerplate/models"
 )
 
@@ -22,8 +23,10 @@ func (s *Server) loginHandler() http.HandlerFunc {
 
 		var user models.User
 		s.db.First(&user, "email = ?", req.Email)
+		spew.Dump(user)
 		if user.CheckPassword(req.Password) {
 			session.Values["authenticated"] = true
+			session.Values["user_id"] = user.ID.String()
 			session.Save(r, w)
 			w.Write([]byte("Login successful!"))
 		} else {
