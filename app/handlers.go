@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -21,12 +22,8 @@ type UsersOnlyResponse struct {
 
 func (s *Server) usersOnly() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, _ := s.sessionStore.Get(r, "boilerplate_userauth")
-		uid, OK := session.Values["user_id"].(string)
-		if !OK {
-			http.Error(w, "Could not decode session info.", http.StatusBadRequest)
-		}
-		resp := &UsersOnlyResponse{Uid: uid}
+		uid := fmt.Sprintf("%v", (r.Context().Value(uidString("uid"))))
+		resp := &UsersOnlyResponse{Uid: fmt.Sprintf("%v", uid)}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(resp)
 	}

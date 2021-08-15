@@ -8,19 +8,17 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/tylerchambers/boilerplate/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type Server struct {
-	router       *mux.Router
-	db           *gorm.DB
-	email        struct{}
-	secretKey    []byte
-	sessionStore *sessions.CookieStore
-	env          *Enviornment
+	router    *mux.Router
+	db        *gorm.DB
+	email     struct{}
+	secretKey []byte
+	env       *Enviornment
 }
 
 // initDB initializes the application's database conection.
@@ -64,12 +62,6 @@ func (s *Server) initSecretKey() error {
 	return errors.New("secret key could not be set - only 32, 24 and 16 byte long keys accepted")
 }
 
-// initSessionStore sets up a session store using the server's secret key.
-func (s *Server) initSessionStore() error {
-	s.sessionStore = sessions.NewCookieStore(s.secretKey)
-	return nil
-}
-
 // NewServer returns an instance of the server.
 func NewServer() (*Server, error) {
 	s := &Server{}
@@ -83,7 +75,6 @@ func NewServer() (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	_ = s.initSessionStore()
 	err = s.initMail()
 	if err != nil {
 		return nil, fmt.Errorf("error opening database connection: %v", err)
