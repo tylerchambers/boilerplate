@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	server, _ := app.NewServer("8080")
+	server, _ := app.NewServer()
 
 	server.Run()
 }

@@ -16,3 +16,6 @@
 
 # Test Sqlite DB
 *.db
+
+# Enviornment files
+*.env
