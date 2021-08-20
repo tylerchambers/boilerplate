@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/tylerchambers/boilerplate/models"
@@ -37,9 +36,6 @@ func (s *Server) initDB() error {
 // migrateDB performs DB migrations.
 func (s *Server) migrateDB() error {
 	s.db.AutoMigrate(&models.User{})
-	// TODO: Remove test user creation.
-	testUser, _ := models.NewUser(time.Now(), "test", "test@example.com", "password1")
-	s.db.Create(testUser)
 
 	return nil
 }
