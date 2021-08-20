@@ -101,7 +101,7 @@ func (u *User) Unsubscribe() {
 }
 
 // NewUser sets up a new user account.
-func NewUser(now time.Time, username, email, password string) (*User, error) {
+func NewUser(now time.Time, username, firstname, lastname, email, password string) (*User, error) {
 	u := new(User)
 	u.SetUsername(username)
 	u.SetEmail(email)
@@ -110,6 +110,8 @@ func NewUser(now time.Time, username, email, password string) (*User, error) {
 	if err != nil {
 		return nil, errors.New("could not register new user")
 	}
+	u.SetFirstName(firstname)
+	u.SetLastName(lastname)
 	u.Registered = now
 	return u, nil
 }
